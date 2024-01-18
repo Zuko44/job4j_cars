@@ -1,6 +1,6 @@
 ## job4j_cars
 
-### about project
+### About project:
 
 ### Website for selling cars.
 Contains advertisements that:
