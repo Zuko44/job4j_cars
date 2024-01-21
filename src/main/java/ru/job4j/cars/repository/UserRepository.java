@@ -3,6 +3,8 @@ package ru.job4j.cars.repository;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.job4j.cars.model.User;
 
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
         return user;
     }
@@ -49,6 +53,8 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
     }
 
@@ -68,6 +74,8 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
     }
 
@@ -78,13 +86,17 @@ public class UserRepository {
      */
     public List<User> findAllOrderById() {
         Session session = sf.openSession();
+        Logger logger = LoggerFactory.getLogger(User.class);
         List<User> users = new ArrayList<>();
         try {
             session.beginTransaction();
-            users = session.createQuery("from auto_user", User.class).list();
+            users = session.createQuery("from User", User.class).list();
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, users not found", ex);
+        } finally {
+            session.close();
         }
         return users;
     }
@@ -96,18 +108,20 @@ public class UserRepository {
      */
     public Optional<User> findById(int userId) {
         Session session = sf.openSession();
-        User user = new User();
+        Optional<User> user = Optional.empty();
         try {
             session.beginTransaction();
             user = session.createQuery(
                             "from auto_user as i where i.id = :fId", User.class)
                     .setParameter("fId", userId)
-                    .uniqueResult();
+                    .uniqueResultOptional();
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
-        return Optional.of(user);
+        return user;
     }
 
     /**
@@ -127,6 +141,8 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
         return users;
     }
@@ -139,16 +155,18 @@ public class UserRepository {
      */
     public Optional<User> findByLogin(String login) {
         Session session = sf.openSession();
-        User user = new User();
+        Optional<User> user = Optional.empty();
         try {
             session.beginTransaction();
             user = session.createQuery("from auto_user where login=:login", User.class)
                     .setParameter("login", login)
-                    .uniqueResult();
+                    .uniqueResultOptional();
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+        } finally {
+            session.close();
         }
-        return Optional.of(user);
+        return user;
     }
 }
