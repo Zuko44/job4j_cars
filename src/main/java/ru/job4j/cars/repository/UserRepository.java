@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public class UserRepository {
+    private final Logger logger = LoggerFactory.getLogger(User.class);
     private final SessionFactory sf;
 
     /**
@@ -29,6 +30,7 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, user not saved", ex);
         } finally {
             session.close();
         }
@@ -51,8 +53,9 @@ public class UserRepository {
                     .setParameter("fId", user.getId())
                     .executeUpdate();
             session.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, user not updated", ex);
         } finally {
             session.close();
         }
@@ -72,8 +75,9 @@ public class UserRepository {
                     .setParameter("fId", userId)
                     .executeUpdate();
             session.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, user not deleted", ex);
         } finally {
             session.close();
         }
@@ -86,7 +90,6 @@ public class UserRepository {
      */
     public List<User> findAllOrderById() {
         Session session = sf.openSession();
-        Logger logger = LoggerFactory.getLogger(User.class);
         List<User> users = new ArrayList<>();
         try {
             session.beginTransaction();
@@ -118,6 +121,7 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, user not found", ex);
         } finally {
             session.close();
         }
@@ -141,6 +145,7 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, users not found", ex);
         } finally {
             session.close();
         }
@@ -164,6 +169,7 @@ public class UserRepository {
             session.getTransaction().commit();
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            logger.error("Error, user not found", ex);
         } finally {
             session.close();
         }
